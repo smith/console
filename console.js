@@ -18,6 +18,12 @@ if (typeof console === "undefined") {
      */
     var console = (function () {
         /**
+         * Is the console enabled? Set this with 
+         * console.enable()/console.disable()
+         */
+        var enabled = true;
+
+        /**
          * The possible console levels
          */
         var levels = {
@@ -268,7 +274,7 @@ if (typeof console === "undefined") {
          * The function that does the work of setting the headers and formatting
          */
         var f = function (level, args) {
-            if (!platform || !hasFirePHP) { return; }
+            if (!platform || !hasFirePHP || !enabled) { return; }
             level = level || levels.log;
             args = Array.prototype.slice.call(args);
     
@@ -438,6 +444,20 @@ if (typeof console === "undefined") {
              */
             dump : function () {
                 f(levels.warn, ["console.dump() is not implemented"]);
+            },
+            /**
+             * Enable the console 
+             */
+            enable : function () {
+                enabled = true;
+                f(levels.info, ["console is enabled"]);
+            },
+            /**
+             * Disable the console
+             */
+            disable : function () {
+                f(levels.info, ["console is disabled"]);
+                enabled = false;
             }
         };
     })();

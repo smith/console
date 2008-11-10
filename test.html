@@ -35,6 +35,11 @@
 
       console.timeEnd("t");
 
+      console.disable();
+      console.log("This", "should", "not", "show", "up");
+      console.enable();
+      console.log("This", "should");
+
       // Try a really long message
       var s = ["a"]
       s[50000] = "z";
