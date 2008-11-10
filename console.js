@@ -1,0 +1,444 @@
+/**
+ * @fileOverview A server-side implementation of the Firebug Console API
+ * @author Nathan L Smith
+ * @date November 8, 2008
+ * @version 0.0.1
+ */
+
+if (typeof console === "undefined") {
+    /**
+     * @namespace console
+     *
+     * This is a partial implementation of the Firebug Console API using 
+     * the Wildfire/FirePHP protocol. 
+     *
+     * @see http://nlsmith.com/console/
+     * @see http://getfirebug.com/console.html
+     * @see http://www.firephp.org/HQ/Use.htm
+     */
+    var console = (function () {
+        /**
+         * The possible console levels
+         */
+        var levels = {
+            log : "LOG",
+            info : "INFO",
+            warn : "WARN",
+            error : "ERROR",
+            trace : "TRACE",
+            table : "TABLE",
+            dump : "DUMP",
+            group : "GROUP_START",
+            groupEnd : "GROUP_END",
+            time : "TIME",
+            timeEnd : "TIME_END"
+        };
+
+        /**
+         * Timers for console.time()
+         */
+        var timers = {};
+
+        /**
+         * The platforms object defines objects for the server-side JavaScript 
+         * platform on which the console object is used
+         */
+        // TODO: Test on other platforms. There may be a problem defining 
+        // platform specific stuff if the objects are not defined, but we're
+        // shooting for Jaxer only right now so it's cool
+        var platforms = {
+            jaxer : {
+                addHeader : function (header, value) { 
+                    Jaxer.response.headers[header] = value;
+                },
+                userAgent : Jaxer.request.headers["User-Agent"],
+                toJSON : Jaxer.Serialization.toJSONString
+            },
+            unknown : { 
+                addHeader : function () { 
+                    throw new Error("Unknown platform");
+                },
+                userAgent : "",
+                toJSON : function () { return ""; }
+            }
+        };
+
+        /** 
+         * Detect the current platform here and assign it to the platform 
+         * variable
+         */
+        var platform = (function () {
+            if (typeof Jaxer === "object" && Jaxer.isOnServer) { 
+                return "jaxer"; 
+            } else if (false) {
+                // TODO: other platforms
+            } else { return "unknown"; }
+        })(); 
+
+        /**
+         * Add a header
+         */
+        var addHeader = platforms[platform].addHeader; 
+
+        /** 
+         * The User agent string from the agent
+         */
+        var userAgent = platforms[platform].userAgent;
+
+        /**
+         * Convert an object to its JSON representation
+         */
+        var toJSON = platforms[platform].toJSON;
+
+        /**
+         * Does the user agent have FirePHP installed?
+         *
+         * The official FirePHP library checks the version, etc., but this just
+         * checks if "FirePHP" is in the user agent string
+         */
+        var hasFirePHP = userAgent.match("FirePHP") !== null;
+
+        /**
+         * The index of headers to be added. Starts at 1
+         */
+        var index = 1;
+
+        /**
+         * The maximium length of any given message
+         */
+        var maxLength = 5000;
+
+        /**
+         * This is an implementation of the sprintf function based on the one
+         * found at http://webtoolkit.info. Takes an array instead of 
+         * multiple arguments
+         *
+         * @see http://www.webtoolkit.info/javascript-sprintf.html
+         */
+        var sprintf = function (args) {
+            if (typeof args == "undefined") { return null; }
+            if (args.length < 1) { return null; }
+            if (typeof args[0] != "string") { return null; }
+            if (typeof RegExp == "undefined") { return null; }
+
+            var convert = function(match, nosign){
+                if (nosign) {
+                    match.sign = '';
+                } else {
+                    match.sign = match.negative ? '-' : match.sign;
+                }
+                var l = match.min - match.argument.length + 1 - match.sign.length;
+                var pad = new Array(l < 0 ? 0 : l).join(match.pad);
+                if (!match.left) {
+                    if (match.pad == "0" || nosign) {
+                            return match.sign + pad + match.argument;
+                    } else {
+                            return pad + match.sign + match.argument;
+                    }
+                } else {
+                    if (match.pad == "0" || nosign) {
+                        return match.sign + match.argument + pad.replace(/0/g, ' ');
+                    } else {
+                        return match.sign + match.argument + pad;
+                    }
+                }
+            }
+ 
+            var string = args[0];
+            var exp = new RegExp(/(%([%]|(\-)?(\+|\x20)?(0)?(\d+)?(\.(\d)?)?([bcdifosxX])))/g);
+            var matches = new Array();
+            var strings = new Array();
+            var convCount = 0;
+            var stringPosStart = 0;
+            var stringPosEnd = 0;
+            var matchPosEnd = 0;
+            var newString = '';
+            var match = null;
+
+            while (match = exp.exec(string)) {
+                if (match[9]) { convCount += 1; }
+
+                stringPosStart = matchPosEnd;
+                stringPosEnd = exp.lastIndex - match[0].length;
+                strings[strings.length] = string.substring(stringPosStart, stringPosEnd);
+
+                matchPosEnd = exp.lastIndex;
+                matches[matches.length] = {
+                    match: match[0],
+                    left: match[3] ? true : false,
+                    sign: match[4] || '',
+                    pad: match[5] || ' ',
+                    min: match[6] || 0,
+                    precision: match[8],
+                    code: match[9] || '%',
+                    negative: parseInt(args[convCount]) < 0 ? true : false,
+                    argument: String(args[convCount])
+                };
+            }
+            strings[strings.length] = string.substring(matchPosEnd);
+
+            if (matches.length == 0) { return string; }
+            if ((args.length - 1) < convCount) { return null; }
+
+            var code = null;
+            var match = null;
+            var i = null;
+
+            for (i=0; i<matches.length; i++) {
+
+                if (matches[i].code == '%') { substitution = '%' }
+                else if (matches[i].code == 'b') {
+                    matches[i].argument = String(Math.abs(parseInt(matches[i].argument)).toString(2));
+                    substitution = convert(matches[i], true);
+                }
+                else if (matches[i].code == 'c') {
+                    matches[i].argument = String(String.fromCharCode(parseInt(Math.abs(parseInt(matches[i].argument)))));
+                    substitution = convert(matches[i], true);
+                }
+                else if (matches[i].code == 'd' || matches[i].code == 'i') {
+                    matches[i].argument = String(Math.abs(parseInt(matches[i].argument)));
+                    substitution = convert(matches[i]);
+                }
+                else if (matches[i].code == 'f') {
+                    matches[i].argument = String(Math.abs(parseFloat(matches[i].argument)).toFixed(matches[i].precision ? matches[i].precision : 6));
+                    substitution = convert(matches[i]);
+                }
+                else if (matches[i].code == 'o') {
+                    matches[i].argument = String(Math.abs(parseInt(matches[i].argument)).toString(8));
+                    substitution = convert(matches[i]);
+                }
+                else if (matches[i].code == 's') {
+                    matches[i].argument = matches[i].argument.substring(0, matches[i].precision ? matches[i].precision : matches[i].argument.length)
+                    substitution = convert(matches[i], true);
+                }
+                else if (matches[i].code == 'x') {
+                    matches[i].argument = String(Math.abs(parseInt(matches[i].argument)).toString(16));
+                    substitution = convert(matches[i]);
+                }
+                else if (matches[i].code == 'X') {
+                    matches[i].argument = String(Math.abs(parseInt(matches[i].argument)).toString(16));
+                    substitution = convert(matches[i]).toUpperCase();
+                }
+                else {
+                    substitution = matches[i].match;
+                }
+
+                newString += strings[i];
+                newString += substitution;
+
+            }
+            newString += strings[i];
+
+            return newString;
+        }
+
+        /**
+         * Combine the arguments to the function and run them through
+         * sprintf if necessary
+         */
+        var handleArgs = function (args) {
+            args = args || [];
+            var argc = args.length;
+            var s = []; // String to return
+
+            // Number of items to substitute in first argument
+            var substitutions = 0; 
+
+            if (argc > 0) {
+                if (typeof args[0] === "string") {
+                    substitutions = (args[0].match(/\%\w/g) || []).length + 1;
+        
+                    // Run string through sprintf is needed
+                    if (substitutions > 1) { 
+                        s.push(sprintf(args.slice(0, substitutions)));
+                        args = args.slice(substitutions, argc);
+                        argc = args.length;
+                    }
+                }
+
+                for (var i = 0; i < argc; i += 1) {
+                    s.push(String(args[i]));
+                }
+
+            }
+            return s.join(" ");
+        }
+
+        /**
+         * The function that does the work of setting the headers and formatting
+         */
+        var f = function (level, args) {
+            if (!platform || !hasFirePHP) { return; }
+            level = level || levels.log;
+            args = Array.prototype.slice.call(args);
+    
+            var s = "" // The string to send to the console
+            var msg = ""; // The complete header message
+            var meta = { // Metadata for object
+                Type : level
+            };
+
+            if (args.length > 0) { // Proceed if there are arguments
+                // If the first argument is an object, only it gets processed
+                if (typeof args[0] === "object") { 
+                    // Error objects can be handled with more detail if they
+                    // were thrown with the "new Error(...)" constructor
+                    if (level === levels.error && args[0] instanceof Error) {
+                        if (args[0].lineNumber) { 
+                            meta.Line = args[0].lineNumber;
+                        }
+                        if (args[0].fileName) {
+                            meta.File = args[0].fileName;
+                        }
+                    }
+                    s = args[0];
+                // If the first argument is not an object, we assume it's a 
+                // string or number and process it accordingly
+                } else { 
+                    if (level === levels.group) { // Handle groups
+                        meta.Label = args[0];
+                    } else if (level === levels.time) { // Handle time
+                        timers[args[0]] = { start : (new Date()).getTime() }
+                        return;
+                    } else if (level === levels.timeEnd) { // Handle time end
+                        meta.Type = levels.info;
+                        if (args[0] in timers) {
+                            timers[args[0]].end = (new Date()).getTime(); 
+                            // Calculate elapsed time
+                            args[0] = args[0] + ": " + (timers[args[0]].end - 
+                                timers[args[0]].start) + "ms";
+                        }
+                    }
+                        
+                    s = handleArgs(args);
+                }
+            } else { return; } // Do nothing if no arguments
+
+            // If the starting headers haven't been added, add them
+            if (index <= 1) {
+                addHeader("X-Wf-Protocol-1", "http://meta.wildfirehq.org/Protocol/JsonStream/0.2"),
+                addHeader("X-Wf-1-Plugin-1", " http://meta.firephp.org/Wildfire/Plugin/FirePHP/Library-FirePHPCore/0.2.0")
+                addHeader("X-Wf-1-Structure-1", "http://meta.firephp.org/Wildfire/Structure/FirePHP/FirebugConsole/0.1")
+            }
+
+            s = toJSON(s); // JSONify string
+            meta = toJSON(meta); // And meta
+            msg = '[' + meta + ',' + s + ']'; // Start message
+
+            if (msg.length < maxLength) {
+                addHeader('X-Wf-1-1-1-' + index, msg.length + '|' + msg + '|');
+            } else { // Split the message up if it's greater than maxLength
+                (function () {
+                    var keyPrefix = 'X-Wf-1-1-1-';
+                    var key = keyPrefix + index;
+                    var value = "";
+                    var totalLength = msg.length;
+                    var messages = [];
+                    var chars = msg.split("");                 
+                    var part = "";
+    
+                    // Split the messages up
+                    for (var i = 0; i < chars.length; i += maxLength) {
+                        part = chars.slice(i, i + maxLength).join("");
+                        messages.push(part);
+                    }
+
+                    // Add a header for each part
+                    for(var i = 0; i < messages.length; i += 1) {
+                        key = keyPrefix + index;
+                        value = '|' + messages[i] + '|';
+
+                        if (i === 0) { value = totalLength + value; index +=1; }
+                        if (i !== messages.length - 1) { value += "\\"; }
+
+                        // FIXME: This really messes up Jaxer, but the 
+                        // formatting looks correct
+                        // addHeader(key, value);
+                        index += 1;
+                    }
+                })(); 
+            }
+            index += 1;
+        }
+
+        return {
+            log : function () {
+                f(levels.log, arguments); 
+            },
+            debug : function () {
+                // log & debug do the same thing
+                f(levels.log, arguments);
+            },
+            info : function () {
+                f(levels.info, arguments);
+            },
+            warn : function () {
+                f(levels.warn, arguments);
+            },
+            error : function () {
+                f(levels.error, arguments);
+            },
+            assert : function () {
+                f(levels.warn, ["console.assert() is not implemented"]);
+            },
+            /**
+             * dir is Firebug specific and probably will not be implemented
+             */
+            dir : function () {
+                f(levels.warn, ["console.dir() is not implemented"]);
+            },
+            /**
+             * dirxml is Firebug specific and probably will not be implemented
+             */
+            dirxml : function () {
+                f(levels.warn, ["console.dirxml() is not implemented"]);
+            },
+            trace : function () {
+                f(levels.warn, ["console.trace() is not implemented"]);
+            },
+            group : function () {
+                f(levels.group, [arguments[0] || ""]);
+            },
+            groupEnd : function () {
+                f(levels.groupEnd, [""]);
+            },
+            time : function () {
+                f(levels.time, [arguments[0] || ""]);
+            },
+            timeEnd : function () {
+                f(levels.timeEnd, [arguments[0] || ""]);
+            },
+            /**
+             * profile is Firebug specific and probably will not be implemented
+             */
+            profile : function () {
+                f(levels.warn, ["console.profile() is not implemented"]);
+            },
+            /**
+             * profileEnd is Firebug specific and probably will not be 
+             * implemented
+             */
+            profileEnd : function () {
+                f(levels.warn, ["console.profileEnd() is not implemented"]);
+            },
+            count : function () {
+                f(levels.warn, ["console.count() is not implemented"]);
+            },
+            /**
+             * table shows the logged object in a tablular format. This is NOT
+             * part of the Firebug console API and is specific to Wildfire
+             */
+            table : function () {
+                f(levels.warn, ["console.table() is not implemented"]);
+            },
+            /**
+             * dump is FirePHP specific and shows an object in the Response 
+             * pane of the Firebug Net tab.I don't forsee implementing it at 
+             * any time.
+             */
+            dump : function () {
+                f(levels.warn, ["console.dump() is not implemented"]);
+            }
+        };
+    })();
+}

@@ -1,0 +1,16 @@
+= console TODO =
+
+== Version 0.0.1 ==
+
+ * Finish readme.html
+ * Publish
+
+== Future Versions ==
+
+ * Fix long messages
+ * ASP support
+ * Rhino support
+ * table
+ * trace
+ * assert
+ * count
