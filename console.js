@@ -150,9 +150,6 @@ if (typeof console === "undefined") {
             if (typeof RegExp == "undefined") { return null; }
 
             var convert = function convert(match, nosign){
-try {
-throw new Error("Boo!");
-} catch (e) { document.write(e.stack + "<br /><br />"); }
                 if (nosign) {
                     match.sign = '';
                 } else {
