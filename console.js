@@ -12,7 +12,7 @@ if (typeof console === "undefined") {
      * This is a partial implementation of the Firebug Console API using 
      * the Wildfire/FirePHP protocol. 
      *
-     * @see http://nlsmith.com/console/
+     * @see http://nlsmith.com/projects/console/
      * @see http://getfirebug.com/console.html
      * @see http://www.firephp.org/HQ/Use.htm
      */
@@ -379,9 +379,11 @@ if (typeof console === "undefined") {
                         if (i === 0) { value = totalLength + value; index +=1; }
                         if (i !== messages.length - 1) { value += "\\"; }
 
-                        // FIXME: This really messes up Jaxer, but the 
-                        // formatting looks correct
-                        // addHeader(key, value);
+                        // FIXME: This really messes up Jaxer, it's OK on ASP.
+                        // It needs to be investigated, I guess
+                        if (platform !== "jaxer") {
+                          addHeader(key, value);
+                        }
                         index += 1;
                     }
                 })(); 
