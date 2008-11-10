@@ -6,18 +6,59 @@
   <img src="/static/images/console.png" alt="" />
   <p class="version">Version 0.0.1</p>
   <ul>
-    <li><a href="/downloads/console.js">console.js</a></li>
+    <li><a href="/downloads/console.js">Download console.js</a></li>
+    <li><a href="http://svn.nlsmith.com/console/trunk">Subversion Repository</a></li>
   </ul>
 </div>
-<p></p>
+<p>This script partially implements the <a href="http://getfirebug.com/console.html">Firebug Console API</a> for server-side JavaScript using the <a href="http://www.wildfirehq.org/">Wildfire</a><a href="http://www.firephp.org/">FirePHP</a> protocol. It currently runs on <a href="http://aptana.com/jaxer">Aptana Jaxer</a>, though support for other server-side JavaScript platforms is planned for future releases.</p>
 <h3>Requirements</h3>
+<h4>Server</h4>
 <ul>
-  <li></li>
+  <li><a href="http://aptana.com/jaxer/download">Jaxer</a> 1.0 or newer</li>
+</ul>
+<h4>Client</h4>
+<ul>
+  <li><a href="http://getfirefox.com/">Mozilla Firefox</a></li>
+  <li>The <a href="http://getfirebug.com/">Firebug</a> extension</li>
+  <li>The <a href="http://firephp.org/">FirePHP</a> extension</li>
 </ul>
 <h3>Differences Between Firebug/FirePHP and This</h3>
-<p></p>
+<p>The Firebug Console API lets you log multiple objects in one statement and use them with the string substition (i.e. <code>console.log("My object: %o", obj)</code>. This implementation only lets you log a single object at a time. If the first argument to one of the functions is an object (that is, anything that responds with <code>"object"</code> to the <code>typeof</code> operator) it will be shown using FirePHP's Variable Viewer. If the list of arguments starts with a string or number, it will be logged as a text message.</p>
+<p>These methods of the Firebug Console API are not currently implemented:</p>
+<ul>
+  <li>console.assert()</li>
+  <li>console.count()</li>
+  <li>console.dir()</li>
+  <li>console.dirxml()</li>
+  <li>console.profile()</li>
+  <li>console.profileEnd()</li>
+  <li>console.trace()</li>
+</ul>
+<p>These features of FirePHP are not implemented:</p>
+<ul>
+  <li>Dump</li>
+  <li>Table</li>
+  <li>Trace</li>
+</ul>
+<p>Some of these will be implemented in future releases, others will not.</p>
+<p>In addition, you can enable and disable messages from appearing with <code>console.enable()</code> and <code>console.disable()</code> respectively.</p>
 <h3>Usage</h3>
-<p></p>
+<ol>
+  <li><a href="/downloads/console.js">Download console.js</a> and put it where your web files are stored.</li>
+  <li>Include it in a page:
+    <code><pre>
+      &lt;script src="console.js" runat="server"&gt;&lt;/script&gt;
+      &lt;script runat="server"&gt;
+        console.log("Hello world!");
+        console.info("And", "so", "on");
+      &lt;/script&gt;"
+    </pre></code>
+  </li>
+</ol>
 <h4>Known Issues</h4>
+<ul>
+  <li>Messages that are over 5000 characters in length will not be logged. This is the top priority for version 0.0.2.</li>
+  <li>If you find any other problems or have any comments, please <a href="/contact/">contact me</a>.</li>
+</ul>
 <script runat="server" src="/site.js"></script>
 </body>
