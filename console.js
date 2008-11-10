@@ -1,8 +1,8 @@
 /**
  * @fileOverview A server-side implementation of the Firebug Console API
  * @author Nathan L Smith
- * @date November 8, 2008
- * @version 0.0.1
+ * @date November 10, 2008
+ * @version 0.0.1 and 1/2
  */
 
 if (typeof console === "undefined") {
@@ -49,25 +49,41 @@ if (typeof console === "undefined") {
          * The platforms object defines objects for the server-side JavaScript 
          * platform on which the console object is used
          */
-        // TODO: Test on other platforms. There may be a problem defining 
-        // platform specific stuff if the objects are not defined, but we're
-        // shooting for Jaxer only right now so it's cool
-        var platforms = {
-            jaxer : {
-                addHeader : function (header, value) { 
-                    Jaxer.response.headers[header] = value;
-                },
-                userAgent : Jaxer.request.headers["User-Agent"],
-                toJSON : Jaxer.Serialization.toJSONString
-            },
-            unknown : { 
+        var platforms = (function () {
+            var p = {}; // Platforms object to return
+
+            try {
+                p.jaxer = {
+                    addHeader : function (header, value) { 
+                        Jaxer.response.headers[header] = value;
+                    },
+                    userAgent : Jaxer.request.headers["User-Agent"],
+                    toJSON : Jaxer.Serialization.toJSONString
+                };
+            } catch (e) {}
+
+            try {
+                p.asp = {
+                    addHeader : function (header, value) { 
+                        Response.addHeader(header, value);
+                    },
+                    userAgent : String(Request.ServerVariables(
+                        "HTTP_USER_AGENT"
+                    )),
+                    toJSON : Object.toJSON // This is from Prototype.js
+                };
+            } catch (e) {}
+
+            p.unknown = { 
                 addHeader : function () { 
                     throw new Error("Unknown platform");
                 },
                 userAgent : "",
                 toJSON : function () { return ""; }
             }
-        };
+
+            return p;
+        })();
 
         /** 
          * Detect the current platform here and assign it to the platform 
@@ -76,6 +92,12 @@ if (typeof console === "undefined") {
         var platform = (function () {
             if (typeof Jaxer === "object" && Jaxer.isOnServer) { 
                 return "jaxer"; 
+            } else if (Request && Response && Application && Session) {
+                // Require Prototype for ASP
+                if (typeof Prototype !== "object") {
+                  throw new Error("Prototype ASP is required. Get it from http://nlsmith.com/projects/prototype-asp");
+                }
+                return "asp";
             } else if (false) {
                 // TODO: other platforms
             } else { return "unknown"; }

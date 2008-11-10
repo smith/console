@@ -1,13 +1,11 @@
 = console TODO =
 
-== Version 0.0.1 ==
+== Version 0.0.2 ==
 
- * Publish
+ * Fix long messages
 
 == Future Versions ==
 
- * Fix long messages
- * ASP support
  * Rhino support
  * table
  * trace
