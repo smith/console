@@ -16,7 +16,7 @@ if (typeof console === "undefined") {
      * @see http://getfirebug.com/console.html
      * @see http://www.firephp.org/HQ/Use.htm
      */
-    var console = (function () {
+    var console = (function console () {
         /**
          * Is the console enabled? Set this with 
          * console.enable()/console.disable()
@@ -49,12 +49,12 @@ if (typeof console === "undefined") {
          * The platforms object defines objects for the server-side JavaScript 
          * platform on which the console object is used
          */
-        var platforms = (function () {
+        var platforms = (function platforms() {
             var p = {}; // Platforms object to return
 
             try {
                 p.jaxer = {
-                    addHeader : function (header, value) { 
+                    addHeader : function addHeader(header, value) { 
                         Jaxer.response.headers[header] = value;
                     },
                     userAgent : Jaxer.request.headers["User-Agent"],
@@ -64,7 +64,7 @@ if (typeof console === "undefined") {
 
             try {
                 p.asp = {
-                    addHeader : function (header, value) { 
+                    addHeader : function addHeader(header, value) { 
                         Response.addHeader(header, value);
                     },
                     userAgent : String(Request.ServerVariables(
@@ -75,11 +75,11 @@ if (typeof console === "undefined") {
             } catch (e) {}
 
             p.unknown = { 
-                addHeader : function () { 
+                addHeader : function addHeader() { 
                     throw new Error("Unknown platform");
                 },
                 userAgent : "",
-                toJSON : function () { return ""; }
+                toJSON : function toJSON() { return ""; }
             }
 
             return p;
@@ -89,7 +89,7 @@ if (typeof console === "undefined") {
          * Detect the current platform here and assign it to the platform 
          * variable
          */
-        var platform = (function () {
+        var platform = (function platform() {
             if (typeof Jaxer === "object" && Jaxer.isOnServer) { 
                 return "jaxer"; 
             } else if (Request && Response && Application && Session) {
@@ -143,13 +143,16 @@ if (typeof console === "undefined") {
          *
          * @see http://www.webtoolkit.info/javascript-sprintf.html
          */
-        var sprintf = function (args) {
+        var sprintf = function sprintf(args) {
             if (typeof args == "undefined") { return null; }
             if (args.length < 1) { return null; }
             if (typeof args[0] != "string") { return null; }
             if (typeof RegExp == "undefined") { return null; }
 
-            var convert = function(match, nosign){
+            var convert = function convert(match, nosign){
+try {
+throw new Error("Boo!");
+} catch (e) { document.write(e.stack + "<br /><br />"); }
                 if (nosign) {
                     match.sign = '';
                 } else {
@@ -264,7 +267,7 @@ if (typeof console === "undefined") {
          * Combine the arguments to the function and run them through
          * sprintf if necessary
          */
-        var handleArgs = function (args) {
+        var handleArgs = function handleArgs(args) {
             args = args || [];
             var argc = args.length;
             var s = []; // String to return
@@ -295,7 +298,7 @@ if (typeof console === "undefined") {
         /**
          * The function that does the work of setting the headers and formatting
          */
-        var f = function (level, args) {
+        var f = function f(level, args) {
             if (!platform || !hasFirePHP || !enabled) { return; }
             level = level || levels.log;
             args = Array.prototype.slice.call(args);
@@ -356,7 +359,7 @@ if (typeof console === "undefined") {
             if (msg.length < maxLength) {
                 addHeader('X-Wf-1-1-1-' + index, msg.length + '|' + msg + '|');
             } else { // Split the message up if it's greater than maxLength
-                (function () {
+                (function splitMessage() {
                     var keyPrefix = 'X-Wf-1-1-1-';
                     var key = keyPrefix + index;
                     var value = "";
@@ -392,73 +395,73 @@ if (typeof console === "undefined") {
         }
 
         return {
-            log : function () {
+            log : function log() {
                 f(levels.log, arguments); 
             },
-            debug : function () {
+            debug : function debug() {
                 // log & debug do the same thing
                 f(levels.log, arguments);
             },
-            info : function () {
+            info : function info() {
                 f(levels.info, arguments);
             },
-            warn : function () {
+            warn : function warn() {
                 f(levels.warn, arguments);
             },
-            error : function () {
+            error : function error() {
                 f(levels.error, arguments);
             },
-            assert : function () {
+            assert : function assert() {
                 f(levels.warn, ["console.assert() is not implemented"]);
             },
             /**
              * dir is Firebug specific and probably will not be implemented
              */
-            dir : function () {
+            dir : function dir() {
                 f(levels.warn, ["console.dir() is not implemented"]);
             },
             /**
              * dirxml is Firebug specific and probably will not be implemented
              */
-            dirxml : function () {
+            dirxml : function dirxml() {
                 f(levels.warn, ["console.dirxml() is not implemented"]);
             },
-            trace : function () {
+            trace : function trace() {
                 f(levels.warn, ["console.trace() is not implemented"]);
             },
-            group : function () {
+            group : function group() {
                 f(levels.group, [arguments[0] || ""]);
             },
-            groupEnd : function () {
+            groupEnd : function groupEnd() {
                 f(levels.groupEnd, [""]);
             },
-            time : function () {
+            time : function time() {
                 f(levels.time, [arguments[0] || ""]);
             },
-            timeEnd : function () {
+            timeEnd : function timeEnd() {
                 f(levels.timeEnd, [arguments[0] || ""]);
             },
             /**
              * profile is Firebug specific and probably will not be implemented
              */
-            profile : function () {
+            profile : function profile() {
                 f(levels.warn, ["console.profile() is not implemented"]);
             },
             /**
              * profileEnd is Firebug specific and probably will not be 
              * implemented
              */
-            profileEnd : function () {
+            profileEnd : function profileEnd() {
                 f(levels.warn, ["console.profileEnd() is not implemented"]);
             },
-            count : function () {
+            count : function count() {
                 f(levels.warn, ["console.count() is not implemented"]);
             },
             /**
              * table shows the logged object in a tablular format. This is NOT
              * part of the Firebug console API and is specific to Wildfire
              */
-            table : function () {
+            table : function table() {
                 f(levels.warn, ["console.table() is not implemented"]);
             },
             /**
@@ -466,23 +469,31 @@ if (typeof console === "undefined") {
              * pane of the Firebug Net tab.I don't forsee implementing it at 
              * any time.
              */
-            dump : function () {
+            dump : function dump() {
                 f(levels.warn, ["console.dump() is not implemented"]);
             },
             /**
              * Enable the console 
              */
-            enable : function () {
+            enable : function enable() {
                 enabled = true;
                 f(levels.info, ["console is enabled"]);
             },
             /**
              * Disable the console
              */
-            disable : function () {
+            disable : function disable() {
                 f(levels.info, ["console is disabled"]);
                 enabled = false;
             }
         };
     })();
+
+    // Add this as a member of the Jaxer object. With this, you can drop this
+    // file into local_jaxer/extensions and Jaxer.console will be automatically
+    // available everywhere
+    // FIXME: I can't get this to work
+    if (typeof Jaxer === "object" && typeof Jaxer.console === "undefined") {
+      Jaxer.console = console;
+    }
 }
