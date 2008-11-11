@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
   <body>
-    <script src="console.js" runat="server"></script>
+    <script src="../console.js" runat="server"></script>
+    <script src="../asp/prototype.js" runat="server"></script>
     <script runat="server">
       Jaxer.response.setClientFramework(null);
       
@@ -38,12 +39,12 @@
       console.disable();
       console.log("This", "should", "not", "show", "up");
       console.enable();
-      console.log("This", "should");
+      console.log("This", "should", "be", "here");
 
       // Try a really long message
-      var s = ["a"]
-      s[50000] = "z";
-      console.log(s.join("~"));
+      var s = []
+      s.length = 5000;
+//    console.log(s);
     </script>
   </body>
 </html>

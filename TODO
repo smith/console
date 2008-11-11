@@ -4,10 +4,13 @@
 
  * Fix long messages in Jaxer
  * Make Jaxer extension (see http://forums.aptana.com/viewtopic.php?p=26057#26057)
+ * Code cleanup
+ * Resolve header length issue
    
 == Future Versions ==
 
  * Rhino support
+ * JScript.NET support
  * table
  * trace
  * assert

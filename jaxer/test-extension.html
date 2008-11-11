@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <script runat="server">
+      Jaxer.response.setClientFramework(null);
+      
+      Jaxer.console.time("t");
+
+      Jaxer.console.log("Hello world!");
+      Jaxer.console.log("Hello %s!", "world", 4, 4, 4);
+      Jaxer.console.log("Hello %d!", 4, "How", "gosit?");
+      Jaxer.console.log("Hello %i%d!", 4, 2);
+      Jaxer.console.info("Multiple", "strings", "separated", 6);
+      Jaxer.console.debug("Debug");
+      Jaxer.console.warn("Warn");
+      Jaxer.console.error("Error");
+
+      Jaxer.console.group("Unimplemented");
+      Jaxer.console.assert();
+      Jaxer.console.dir();
+      Jaxer.console.dirxml();
+      Jaxer.console.profile();
+      Jaxer.console.profileEnd();
+      Jaxer.console.count();
+      Jaxer.console.table();
+      Jaxer.console.dump();
+      Jaxer.console.groupEnd();
+
+      Jaxer.console.log({ a : 1, b : 2 });
+
+      try {
+        throw new Error("Oh no!");
+      } catch (e) { Jaxer.console.error(e); }
+
+      Jaxer.console.timeEnd("t");
+
+      Jaxer.console.disable();
+      Jaxer.console.log("This", "should", "not", "show", "up");
+      Jaxer.console.enable();
+      Jaxer.console.log("This", "should");
+
+      // Try a really long message
+      var s = ["a"]
+      s[50000] = "z";
+      //Jaxer.console.log(s.join("~"));
+      
+    </script>
+  </body>
+</html>

@@ -1,0 +1,8 @@
+= console Change Log =
+
+== Version 0.0.2 ==
+
+ * Added ASP support
+ * Added named anonymous functions
+ * Added MIT License
+ * Added change log

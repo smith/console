@@ -5,6 +5,8 @@
  * @version 0.0.1 and 1/2
  */
 
+/*global console, Jaxer, Request, Response, Application, Session */
+
 if (typeof console === "undefined") {
     /**
      * @namespace console
@@ -16,7 +18,7 @@ if (typeof console === "undefined") {
      * @see http://getfirebug.com/console.html
      * @see http://www.firephp.org/HQ/Use.htm
      */
-    var console = (function console () {
+    var console = (function () {
         /**
          * Is the console enabled? Set this with 
          * console.enable()/console.disable()
@@ -52,13 +54,19 @@ if (typeof console === "undefined") {
         var platforms = (function platforms() {
             var p = {}; // Platforms object to return
 
+            // FIXME: Jaxer.request and Jaxer.response are null when Jaxer
+            // loads, preventing this from being loaded as an extension.
+            // Need to find a workaround for this. What's below is not quite 
+            // clever enough.
             try {
                 p.jaxer = {
                     addHeader : function addHeader(header, value) { 
                         Jaxer.response.headers[header] = value;
                     },
                     userAgent : Jaxer.request.headers["User-Agent"],
-                    toJSON : Jaxer.Serialization.toJSONString
+                    toJSON : function toJSON(o) {
+                        return Jaxer.Serialization.toJSONString(o, { as : "JSON" });
+                    }
                 };
             } catch (e) {}
 
@@ -67,9 +75,7 @@ if (typeof console === "undefined") {
                     addHeader : function addHeader(header, value) { 
                         Response.addHeader(header, value);
                     },
-                    userAgent : String(Request.ServerVariables(
-                        "HTTP_USER_AGENT"
-                    )),
+                    userAgent : String(Request.ServerVariables("HTTP_USER_AGENT")),
                     toJSON : Object.toJSON // This is from Prototype.js
                 };
             } catch (e) {}
@@ -80,7 +86,7 @@ if (typeof console === "undefined") {
                 },
                 userAgent : "",
                 toJSON : function toJSON() { return ""; }
-            }
+            };
 
             return p;
         })();
@@ -94,8 +100,8 @@ if (typeof console === "undefined") {
                 return "jaxer"; 
             } else if (Request && Response && Application && Session) {
                 // Require Prototype for ASP
-                if (typeof Prototype !== "object") {
-                  throw new Error("Prototype ASP is required. Get it from http://nlsmith.com/projects/prototype-asp");
+                if (typeof Object.toJSON !== "function") {
+                  throw new Error("Prototype ASP (or another implementation of Object.toJSON())is required. Get it from http://nlsmith.com/projects/prototype-asp");
                 }
                 return "asp";
             } else if (false) {
@@ -258,7 +264,7 @@ if (typeof console === "undefined") {
             newString += strings[i];
 
             return newString;
-        }
+        };
 
         /**
          * Combine the arguments to the function and run them through
@@ -290,7 +296,7 @@ if (typeof console === "undefined") {
 
             }
             return s.join(" ");
-        }
+        };
 
         /**
          * The function that does the work of setting the headers and formatting
@@ -300,7 +306,7 @@ if (typeof console === "undefined") {
             level = level || levels.log;
             args = Array.prototype.slice.call(args);
     
-            var s = "" // The string to send to the console
+            var s = ""; // The string to send to the console
             var msg = ""; // The complete header message
             var meta = { // Metadata for object
                 Type : level
@@ -326,7 +332,7 @@ if (typeof console === "undefined") {
                     if (level === levels.group) { // Handle groups
                         meta.Label = args[0];
                     } else if (level === levels.time) { // Handle time
-                        timers[args[0]] = { start : (new Date()).getTime() }
+                        timers[args[0]] = { start : (new Date()).getTime() };
                         return;
                     } else if (level === levels.timeEnd) { // Handle time end
                         meta.Type = levels.info;
@@ -344,9 +350,9 @@ if (typeof console === "undefined") {
 
             // If the starting headers haven't been added, add them
             if (index <= 1) {
-                addHeader("X-Wf-Protocol-1", "http://meta.wildfirehq.org/Protocol/JsonStream/0.2"),
-                addHeader("X-Wf-1-Plugin-1", " http://meta.firephp.org/Wildfire/Plugin/FirePHP/Library-FirePHPCore/0.2.0")
-                addHeader("X-Wf-1-Structure-1", "http://meta.firephp.org/Wildfire/Structure/FirePHP/FirebugConsole/0.1")
+                addHeader("X-Wf-Protocol-1", "http://meta.wildfirehq.org/Protocol/JsonStream/0.2");
+                addHeader("X-Wf-1-Plugin-1", " http://meta.firephp.org/Wildfire/Plugin/FirePHP/Library-FirePHPCore/0.2.0");
+                addHeader("X-Wf-1-Structure-1", "http://meta.firephp.org/Wildfire/Structure/FirePHP/FirebugConsole/0.1");
             }
 
             s = toJSON(s); // JSONify string
@@ -372,11 +378,11 @@ if (typeof console === "undefined") {
                     }
 
                     // Add a header for each part
-                    for(var i = 0; i < messages.length; i += 1) {
+                    for(i = 0; i < messages.length; i += 1) {
                         key = keyPrefix + index;
                         value = '|' + messages[i] + '|';
 
-                        if (i === 0) { value = totalLength + value; index +=1; }
+                        if (i === 0) { value = totalLength + value; }
                         if (i !== messages.length - 1) { value += "\\"; }
 
                         // FIXME: This really messes up Jaxer, it's OK on ASP.
@@ -389,7 +395,7 @@ if (typeof console === "undefined") {
                 })(); 
             }
             index += 1;
-        }
+        };
 
         return {
             log : function log() {
@@ -489,7 +495,7 @@ if (typeof console === "undefined") {
     // Add this as a member of the Jaxer object. With this, you can drop this
     // file into local_jaxer/extensions and Jaxer.console will be automatically
     // available everywhere
-    // FIXME: I can't get this to work
+    // FIXME: Does not work. See platforms()
     if (typeof Jaxer === "object" && typeof Jaxer.console === "undefined") {
       Jaxer.console = console;
     }
