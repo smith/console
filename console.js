@@ -1,9 +1,16 @@
 /**
  * @fileOverview A server-side implementation of the Firebug Console API
  * @author Nathan L Smith
- * @date November 10, 2008
- * @version 0.0.1 and 1/2
+ * @date November 12, 2008
+ * @version 0.0.2
  */
+// FIXME: Jaxer has a seemingly low limit for length of headers. ASP also has a
+// limit, but it is more reasonable. It is difficult to determine what these
+// limits are, since they are based on the number and length of the headers 
+// sent, and headers not sent by this script.
+//
+// In short, logging too many messages on one request will cause the server to 
+// not give a response at all.
 
 /*global console, Jaxer, Request, Response, Application, Session */
 
@@ -68,7 +75,7 @@ if (typeof console === "undefined") {
                         return Jaxer.Serialization.toJSONString(o, { as : "JSON" });
                     }
                 };
-            } catch (e) {}
+            } catch (eJaxer) {}
 
             try {
                 p.asp = {
@@ -78,7 +85,7 @@ if (typeof console === "undefined") {
                     userAgent : String(Request.ServerVariables("HTTP_USER_AGENT")),
                     toJSON : Object.toJSON // This is from Prototype.js
                 };
-            } catch (e) {}
+            } catch (eAsp) {}
 
             p.unknown = { 
                 addHeader : function addHeader() { 
@@ -149,13 +156,13 @@ if (typeof console === "undefined") {
          *
          * @see http://www.webtoolkit.info/javascript-sprintf.html
          */
-        var sprintf = function sprintf(args) {
+        function sprintf(args) {
             if (typeof args == "undefined") { return null; }
             if (args.length < 1) { return null; }
             if (typeof args[0] != "string") { return null; }
             if (typeof RegExp == "undefined") { return null; }
 
-            var convert = function convert(match, nosign){
+            function convert(match, nosign){
                 if (nosign) {
                     match.sign = '';
                 } else {
@@ -264,13 +271,13 @@ if (typeof console === "undefined") {
             newString += strings[i];
 
             return newString;
-        };
+        }
 
         /**
          * Combine the arguments to the function and run them through
          * sprintf if necessary
          */
-        var handleArgs = function handleArgs(args) {
+        function handleArgs(args) {
             args = args || [];
             var argc = args.length;
             var s = []; // String to return
@@ -296,12 +303,12 @@ if (typeof console === "undefined") {
 
             }
             return s.join(" ");
-        };
+        }
 
         /**
          * The function that does the work of setting the headers and formatting
          */
-        var f = function f(level, args) {
+        function f(level, args) {
             if (!platform || !hasFirePHP || !enabled) { return; }
             level = level || levels.log;
             args = Array.prototype.slice.call(args);
@@ -385,17 +392,13 @@ if (typeof console === "undefined") {
                         if (i === 0) { value = totalLength + value; }
                         if (i !== messages.length - 1) { value += "\\"; }
 
-                        // FIXME: This really messes up Jaxer, it's OK on ASP.
-                        // It needs to be investigated, I guess
-                        if (platform !== "jaxer") {
-                          addHeader(key, value);
-                        }
+                        addHeader(key, value);
                         index += 1;
                     }
                 })(); 
             }
             index += 1;
-        };
+        }
 
         return {
             log : function log() {

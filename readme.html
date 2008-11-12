@@ -4,7 +4,7 @@
 <h3>JavaScript Server-Side Console</h3>
 <div class="downloadBox">
   <img src="/static/images/console.png" alt="" />
-  <p class="version">Version 0.0.1</p>
+  <p class="version">Version 0.0.2</p>
   <ul>
     <li><a href="/downloads/console.js">Download console.js</a></li>
     <li><a href="http://svn.nlsmith.com/console/trunk">Subversion Repository</a></li>
@@ -19,7 +19,7 @@
 <p>or</p>
 <ul>
   <li>Microsoft IIS</li>
-  <li><a href="/projects/prototype-asp">Prototype ASP</a> (for <a href="http://json.org">JSON</a> support.</li>
+  <li><a href="/projects/prototype-asp">Prototype ASP</a> (for <a href="http://json.org">JSON</a> support.)</li>
 </ul>
 <h4>Client</h4>
 <ul>
@@ -51,7 +51,7 @@
 <ol>
   <li><a href="/downloads/console.js">Download console.js</a> and put it where your web files are stored.</li>
   <li>Include it in a page:
-    <h5>On Jaxer</h5>
+    <h5>On Jaxer:</h5>
     <code><pre>
       &lt;script src="console.js" runat="server"&gt;&lt;/script&gt;
       &lt;script runat="server"&gt;
@@ -59,7 +59,7 @@
         console.info("And", "so", "on");
       &lt;/script&gt;
     </pre></code>
-    <h5>On ASP</h5>
+    <h5>On ASP:</h5>
     <code><pre>
       &lt;script src="prototype.js" language="JavaScript" runat="server"&gt;&lt;/script&gt;
       &lt;script src="console.js" language="JavaScript" runat="server"&gt;&lt;/script&gt;
@@ -70,9 +70,23 @@
     </pre></code>
   </li>
 </ol>
+<h4>History</h4>
+<h5>Version 0.0.2</h5>
+<h6>November 12, 2008</h6>
+<ul>
+  <li>Added ASP support</li>
+  <li>Added MIT License and change log</li>
+  <li>Fixed Jaxer toJSON bug</li>
+  <li>Minor code cleanup</li>
+</ul> 
+<h5>Version 0.0.1</h5>
+<h6>November 9, 2008</h6>
+<ul>
+  <li>Initial release</li>
+</ul>
 <h4>Known Issues</h4>
 <ul>
-  <li>Messages that are over 5000 characters in length will not be logged. This is the top priority for version 0.0.2.</li>
+  <li>If too many messages are logged in a given request, the server will not respond at all. What &#8220;too many&#8221; is depends on your platform. If your server does not respond, don't log so many messages or disable the console object.</li>
   <li>If you find any other problems or have any comments, please <a href="/contact/">contact me</a>.</li>
 </ul>
 <script runat="server" src="/site.js"></script>

@@ -6,3 +6,5 @@
  * Added named anonymous functions
  * Added MIT License
  * Added change log
+ * Fixed Jaxer toJSON bug
+ * Minor code cleanup 
