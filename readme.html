@@ -51,25 +51,24 @@
 <ol>
   <li><a href="/downloads/console.js">Download console.js</a> and put it where your web files are stored.</li>
   <li>Include it in a page:
-    <h5>On Jaxer:</h5>
-    <code><pre>
-      &lt;script src="console.js" runat="server"&gt;&lt;/script&gt;
-      &lt;script runat="server"&gt;
-        console.log("Hello world!");
-        console.info("And", "so", "on");
-      &lt;/script&gt;
-    </pre></code>
-    <h5>On ASP:</h5>
-    <code><pre>
-      &lt;script src="prototype.js" language="JavaScript" runat="server"&gt;&lt;/script&gt;
-      &lt;script src="console.js" language="JavaScript" runat="server"&gt;&lt;/script&gt;
-      &lt;script language="JavaScript" runat="server"&gt;
-        console.log("Hello world!");
-        console.info("And", "so", "on");
-      &lt;/script&gt;
-    </pre></code>
-  </li>
 </ol>
+    <h5>On Jaxer:</h5>
+    <code class="prettyprint">
+&lt;script src="console.js" runat="server"&gt;&lt;/script&gt;
+&lt;script runat="server"&gt;
+  console.log("Hello world!");
+  console.info("And", "so", "on");
+&lt;/script&gt;
+    </code>
+    <h5>On ASP:</h5>
+    <code class="prettyprint">
+&lt;script src="prototype.js" language="JavaScript" runat="server"&gt;&lt;/script&gt;
+&lt;script src="console.js" language="JavaScript" runat="server"&gt;&lt;/script&gt;
+&lt;script language="JavaScript" runat="server"&gt;
+  console.log("Hello world!");
+  console.info("And", "so", "on");
+&lt;/script&gt;
+    </code>
 <h4>History</h4>
 <h5>Version 0.0.2</h5>
 <h6>November 12, 2008</h6>

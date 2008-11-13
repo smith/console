@@ -1,9 +1,8 @@
 = console TODO =
 
-== Version 0.0.2 ==
+== Version 0.0.3 ==
 
  * Make Jaxer extension (see http://forums.aptana.com/viewtopic.php?p=26057#26057)
- * Resolve header length issue
    
 == Future Versions ==
 
