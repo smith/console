@@ -9,10 +9,12 @@
 // limits are, since they are based on the number and length of the headers 
 // sent, and headers not sent by this script.
 //
+//
+//
 // In short, logging too many messages on one request will cause the server to 
 // not give a response at all.
 
-/*global console, Jaxer, Request, Response, Application, Session */
+/*global console, Jaxer, Request, Response */
 
 if (typeof console === "undefined") {
     /**
@@ -61,10 +63,6 @@ if (typeof console === "undefined") {
         var platforms = (function platforms() {
             var p = {}; // Platforms object to return
 
-            // FIXME: Jaxer.request and Jaxer.response are null when Jaxer
-            // loads, preventing this from being loaded as an extension.
-            // Need to find a workaround for this. What's below is not quite 
-            // clever enough.
             try {
                 p.jaxer = {
                     addHeader : function addHeader(header, value) { 
@@ -105,7 +103,8 @@ if (typeof console === "undefined") {
         var platform = (function platform() {
             if (typeof Jaxer === "object" && Jaxer.isOnServer) { 
                 return "jaxer"; 
-            } else if (Request && Response && Application && Session) {
+            } else if (Request && Response && Request.ServerVariables && 
+                       Response.addHeader) {
                 // Require Prototype for ASP
                 if (typeof Object.toJSON !== "function") {
                   throw new Error("Prototype ASP (or another implementation of Object.toJSON())is required. Get it from http://nlsmith.com/projects/prototype-asp");
@@ -494,12 +493,4 @@ if (typeof console === "undefined") {
             }
         };
     })();
-
-    // Add this as a member of the Jaxer object. With this, you can drop this
-    // file into local_jaxer/extensions and Jaxer.console will be automatically
-    // available everywhere
-    // FIXME: Does not work. See platforms()
-    if (typeof Jaxer === "object" && typeof Jaxer.console === "undefined") {
-      Jaxer.console = console;
-    }
 }
