@@ -2,8 +2,13 @@
 <html>
   <body>
     <script runat="server">
+      // This is by no means a comprehensive test suite, just some examples that
+      // cover common cases.
+
+      // Do not load the Jaxer client framework
       Jaxer.response.setClientFramework(null);
       
+      Jaxer.console.echo = true;
       Jaxer.console.time("t");
 
       Jaxer.console.log("Hello world!");
@@ -15,6 +20,7 @@
       Jaxer.console.warn("Warn");
       Jaxer.console.error("Error");
 
+      Jaxer.console.time("u");
       Jaxer.console.group("Unimplemented");
       Jaxer.console.assert();
       Jaxer.console.dir();
@@ -25,6 +31,7 @@
       Jaxer.console.table();
       Jaxer.console.dump();
       Jaxer.console.groupEnd();
+      Jaxer.console.timeEnd("u");
 
       Jaxer.console.log({ a : 1, b : 2 });
 
@@ -33,17 +40,21 @@
       } catch (e) { Jaxer.console.error(e); }
 
       Jaxer.console.timeEnd("t");
+      Jaxer.console.time("t");
 
       Jaxer.console.disable();
       Jaxer.console.log("This", "should", "not", "show", "up");
       Jaxer.console.enable();
-      Jaxer.console.log("This", "should");
-
+      Jaxer.console.log("This", "should", "be", "here");
+      Jaxer.console.echo = true;
+      Jaxer.console.log(Jaxer.console.echo);
       // Try a really long message
-      var s = ["a"]
-      s[50000] = "z";
+      // var s = ["a"]
+      // s[50000] = "z";
       //Jaxer.console.log(s.join("~"));
-      
+      Jaxer.console.timeEnd("t");
+      Jaxer.console.echo = false;
+      Jaxer.console.log("Hi!");
     </script>
   </body>
 </html>

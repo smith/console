@@ -2,9 +2,13 @@
 <html>
   <body>
     <script src="../console.js" runat="server"></script>
-    <script src="../asp/prototype.js" runat="server"></script>
     <script runat="server">
+      // This is by no means a comprehensive test suite, just some examples that
+      // cover common cases.
+
+      // Do not load the Jaxer client framework
       Jaxer.response.setClientFramework(null);
+
       console.time("t");
 
       console.log("Hello world!");

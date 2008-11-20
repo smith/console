@@ -1,18 +1,9 @@
 /**
  * @fileOverview A server-side implementation of the Firebug Console API
  * @author Nathan L Smith
- * @date November 12, 2008
- * @version 0.0.2
+ * @date November 20, 2008
+ * @version 0.0.3
  */
-// FIXME: Jaxer has a seemingly low limit for length of headers. ASP also has a
-// limit, but it is more reasonable. It is difficult to determine what these
-// limits are, since they are based on the number and length of the headers 
-// sent, and headers not sent by this script.
-//
-//
-//
-// In short, logging too many messages on one request will cause the server to 
-// not give a response at all.
 
 /*global console, Jaxer, Request, Response */
 
@@ -317,6 +308,7 @@ if (typeof console === "undefined") {
             var meta = { // Metadata for object
                 Type : level
             };
+            var time; // Value for timer
 
             if (args.length > 0) { // Proceed if there are arguments
                 // If the first argument is an object, only it gets processed
@@ -345,8 +337,10 @@ if (typeof console === "undefined") {
                         if (args[0] in timers) {
                             timers[args[0]].end = (new Date()).getTime(); 
                             // Calculate elapsed time
-                            args[0] = args[0] + ": " + (timers[args[0]].end - 
-                                timers[args[0]].start) + "ms";
+                            time = timers[args[0]].end - timers[args[0]].start;
+                            if (isFinite(time)) {
+                                args[0] = args[0] + ": " + time + "ms";
+                            } else { args[0] = "Invalid timer"; }
                         }
                     }
                         

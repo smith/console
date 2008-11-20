@@ -4,9 +4,10 @@
 <h3>JavaScript Server-Side Console</h3>
 <div class="downloadBox">
   <img src="/static/images/console.png" alt="" />
-  <p class="version">Version 0.0.2</p>
+  <p class="version">Version 0.0.3</p>
   <ul>
     <li><a href="/downloads/console.js">Download console.js</a></li>
+    <li><a href="/downloads/Jaxer.console.js">Download Jaxer.console.js Jaxer Extension</a></li>
     <li><a href="http://svn.nlsmith.com/console/trunk">Subversion Repository</a></li>
   </ul>
 </div>
@@ -52,14 +53,6 @@
   <li><a href="/downloads/console.js">Download console.js</a> and put it where your web files are stored.</li>
   <li>Include it in a page:
 </ol>
-    <h5>On Jaxer:</h5>
-    <code class="prettyprint">
-&lt;script src="console.js" runat="server"&gt;&lt;/script&gt;
-&lt;script runat="server"&gt;
-  console.log("Hello world!");
-  console.info("And", "so", "on");
-&lt;/script&gt;
-    </code>
     <h5>On ASP:</h5>
     <code class="prettyprint">
 &lt;script src="prototype.js" language="JavaScript" runat="server"&gt;&lt;/script&gt;
@@ -69,7 +62,26 @@
   console.info("And", "so", "on");
 &lt;/script&gt;
     </code>
+    <h5>On Jaxer:</h5>
+    <code class="prettyprint">
+&lt;script src="console.js" runat="server"&gt;&lt;/script&gt;
+&lt;script runat="server"&gt;
+  console.log("Hello world!");
+  console.info("And", "so", "on");
+&lt;/script&gt;
+    </code>
+    <h5>As a Jaxer Extension:</h5>
+    <p><a href="/downloads/Jaxer.console.js">Download the Jaxer extension</a> and place it into your <code>local_jaxer/extensions</code> directory. Once Jaxer is restarted, the <code>Jaxer.console</code> object becomes available to all scripts. Usage is the same as above, except the script does not need to be included and <code>Jaxer.console</code> is used instead of <code>console</code>.</p>
+    <p>Echoing to the Jaxer log can be enabled and disabled by setting <code>Jaxer.console.echo</code> to true and false respectively.</p>
+    <p>These Boolean options can also be set in your <code>local_jaxer/conf/config.js</code>:
+    <ul>
+      <li><code>CONSOLE_DISABLED</code></li>
+      <li><code>CONSOLE_ECHO_TO_LOG</code></li>
+    </ul>
 <h4>History</h4>
+<h5>Version 0.0.3</h5>
+<h6>November 20, 2008</h6>
+<ul><li>Added Jaxer extension</li></ul> 
 <h5>Version 0.0.2</h5>
 <h6>November 12, 2008</h6>
 <ul>
@@ -85,7 +97,7 @@
 </ul>
 <h4>Known Issues</h4>
 <ul>
-  <li>If too many messages are logged in a given request, the server will not respond at all. What &#8220;too many&#8221; is depends on your platform. If your server does not respond, don't log so many messages or disable the console object.</li>
+  <li>If too many messages are logged in a given request, the server will not respond at all. What &#8220;too many&#8221; is depends on your platform. If your server does not respond, don't log so many messages or disable the console object. This threshold is reasonably high on ASP, and there is <a href="http://support.aptana.com/asap/browse/JXR-400">a bug report</a> open for Jaxer.</li>
   <li>If you find any other problems or have any comments, please <a href="/contact/">contact me</a>.</li>
 </ul>
 <script runat="server" src="/site.js"></script>

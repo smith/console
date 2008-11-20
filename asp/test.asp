@@ -4,6 +4,9 @@
     <script src="prototype.js" language="JavaScript" runat="server"></script>
     <script src="../console.js" language="JavaScript" runat="server"></script>
     <script language="JavaScript" runat="server">
+      // This is by no means a comprehensive test suite, just some examples that
+      // cover common cases.
+
       console.time("t");
 
       console.log("Hello world!");
