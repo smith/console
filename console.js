@@ -94,8 +94,7 @@ if (typeof console === "undefined") {
         var platform = (function platform() {
             if (typeof Jaxer === "object" && Jaxer.isOnServer) { 
                 return "jaxer"; 
-            } else if (Request && Response && Request.ServerVariables && 
-                       Response.addHeader) {
+            } else if (Request && Response && Request.ServerVariables) {
                 // Require Prototype for ASP
                 if (typeof Object.toJSON !== "function") {
                   throw new Error("Prototype ASP (or another implementation of Object.toJSON())is required. Get it from http://nlsmith.com/projects/prototype-asp");
