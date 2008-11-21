@@ -5,8 +5,8 @@
  *   Jaxer.console object to all requests
  *
  * @author Nathan L Smith
- * @date November 20, 2008
- * @version 0.0.3
+ * @date November 21, 2008
+ * @version 0.0.4
  */
 
 /*global Jaxer */

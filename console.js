@@ -1,8 +1,8 @@
 /**
  * @fileOverview A server-side implementation of the Firebug Console API
  * @author Nathan L Smith
- * @date November 20, 2008
- * @version 0.0.3
+ * @date November 21, 2008
+ * @version 0.0.4
  */
 
 /*global console, Jaxer, Request, Response */
@@ -76,6 +76,16 @@ if (typeof console === "undefined") {
                 };
             } catch (eAsp) {}
 
+            try {
+                p.appjet = {
+                    addHeader : function addHeader(header, value) {
+                        response.setHeader(header, value);
+                    },
+                    userAgent : request.headers["User-Agent"],
+                    toJSON : JSON.stringify
+                };
+            } catch (eAppjet) {}
+
             p.unknown = { 
                 addHeader : function addHeader() { 
                     throw new Error("Unknown platform");
@@ -94,12 +104,16 @@ if (typeof console === "undefined") {
         var platform = (function platform() {
             if (typeof Jaxer === "object" && Jaxer.isOnServer) { 
                 return "jaxer"; 
-            } else if (Request && Response && Request.ServerVariables) {
+            } else if (typeof Request === "object"  && 
+                       typeof Response === "object" && 
+                       typeof Request.ServerVariables === "object") {
                 // Require Prototype for ASP
                 if (typeof Object.toJSON !== "function") {
                   throw new Error("Prototype ASP (or another implementation of Object.toJSON())is required. Get it from http://nlsmith.com/projects/prototype-asp");
                 }
                 return "asp";
+            } else if (typeof appjet === "object") {
+                return "appjet"; 
             } else if (false) {
                 // TODO: other platforms
             } else { return "unknown"; }

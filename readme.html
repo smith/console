@@ -11,7 +11,7 @@
     <li><a href="http://svn.nlsmith.com/console/trunk">Subversion Repository</a></li>
   </ul>
 </div>
-<p>This script partially implements the <a href="http://getfirebug.com/console.html">Firebug Console API</a> for server-side JavaScript using the <a href="http://www.wildfirehq.org/">Wildfire</a>/<a href="http://www.firephp.org/">FirePHP</a> protocol. It currently runs on <a href="http://aptana.com/jaxer">Aptana Jaxer</a> and <a href="http://www.w3schools.com/asp/default.asp">&#8220;Classic&#8221; ASP</a>, though support for other server-side JavaScript platforms is planned for future releases.</p>
+<p>This script partially implements the <a href="http://getfirebug.com/console.html">Firebug Console API</a> for server-side JavaScript using the <a href="http://www.wildfirehq.org/">Wildfire</a>/<a href="http://www.firephp.org/">FirePHP</a> protocol. It currently runs on <a href="http://aptana.com/jaxer">Aptana Jaxer</a> and <a href="http://www.w3schools.com/asp/default.asp">&#8220;Classic&#8221; ASP</a>, and <a href="http://appjet.com/">AppJet</a>, though support for other server-side JavaScript platforms is planned for future releases.</p>
 <h3>Requirements</h3>
 <h4>Server</h4>
 <ul>
@@ -21,6 +21,10 @@
 <ul>
   <li>Microsoft IIS</li>
   <li><a href="/projects/prototype-asp">Prototype ASP</a> (for <a href="http://json.org">JSON</a> support.)</li>
+</ul>
+<p>or</p>
+<ul>
+  <li>AppJet</li>
 </ul>
 <h4>Client</h4>
 <ul>
@@ -62,6 +66,9 @@
   console.info("And", "so", "on");
 &lt;/script&gt;
     </code>
+    <h5>On Appjet:</h5>
+    <p>The console library is hosted at <a href="http://lib-console.appjet.net/">http://lib-console.appjet.net/</a>. You can use it in your own AppJet applications by calling <code>import('lib-console');</code>.<p>
+    <p>An example page is hosted at <a href="http://console-test.appjet.net/">http://console-test.appjet.net/</a>.</p>
     <h5>On Jaxer:</h5>
     <code class="prettyprint">
 &lt;script src="console.js" runat="server"&gt;&lt;/script&gt;
@@ -79,6 +86,9 @@
       <li><code>CONSOLE_ECHO_TO_LOG</code></li>
     </ul>
 <h4>History</h4>
+<h5>Version 0.0.4</h5>
+<h6>November 21, 2008</h6>
+<ul><li>Added AppJet support</li></ul> 
 <h5>Version 0.0.3</h5>
 <h6>November 20, 2008</h6>
 <ul><li>Added Jaxer extension</li></ul> 
@@ -99,6 +109,14 @@
 <ul>
   <li>If too many messages are logged in a given request, the server will not respond at all. What &#8220;too many&#8221; is depends on your platform. If your server does not respond, don't log so many messages or disable the console object. This threshold is reasonably high on ASP, and there is <a href="http://support.aptana.com/asap/browse/JXR-400">a bug report</a> open for Jaxer.</li>
   <li>If you find any other problems or have any comments, please <a href="/contact/">contact me</a>.</li>
+</ul>
+<h4>Acknowledgements</h4>
+<p>This script would not have been possible without the help of these people:</p>
+<ul>
+  <li>Christoph Dorn, for the FirePHP library</li>
+  <li>Joe Hewitt, et. al. (did people make websites before Firebug?)</li>
+  <li>The folks at <a href="http://webtoolkit.info">webtoolkit.info</a>, for their <code>sprintf</code> implementation</li>
+  <li>Davey at Aptana, and the whole Aptana staff for all of their help with Jaxer and the T-shirt</li>
 </ul>
 <script runat="server" src="/site.js"></script>
 </body>
