@@ -13,13 +13,16 @@ The purpose of this fork is to:
     * Add support for defining and validating message structures using JSON Schema
     * Add support for the complete firebug console API
 
-The resulting library will be used in [FireWidgets](http://code.google.com/p/firewidgets/).
+The resulting library will be used in [FireWidgets][].
+
+
+  [FireWidgets]: http://code.google.com/p/firewidgets/  "[FireWidgets]"
 
 
 Repository Layout
 -----------------
 
-/library/console/			      The core console implementation
-/library/console/platform/  Platform-specific console wrappers
-/library/wildfire/          Out-of-band communication library
-/docs/                      Documentation
+    /library/console/			      The core console implementation
+    /library/console/platform/  Platform-specific console wrappers
+    /library/wildfire/          Out-of-band communication library
+    /docs/                      Documentation
