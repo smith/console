@@ -2,7 +2,7 @@
 Overview
 --------
 
-For an introduction please see: [Console] []
+For an introduction please see [here] [].
 
 The purpose of this fork is to:
 
@@ -17,7 +17,7 @@ The resulting library will be used in [FireWidgets] [].
 
 
   [Console]:     http://nlsmith.com/projects/console/   "http://nlsmith.com/projects/console/"
-  [FireWidgets]: http://code.google.com/p/firewidgets/  "FireWidgets"
+  [FireWidgets]: http://code.google.com/p/firewidgets/  "http://code.google.com/p/firewidgets/"
 
 
 Repository Layout
